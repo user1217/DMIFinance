@@ -1,23 +1,23 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
+import { LEADS_DATA_URL } from './service/lead.service';
 
 describe('App', () => {
-  beforeEach(async () => {
+  it('opens the Loan Dashboard at the application root', async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
-  });
 
-  it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
+    fixture.detectChanges();
+    const httpTesting = TestBed.inject(HttpTestingController);
+    httpTesting.expectOne(LEADS_DATA_URL).flush([]);
+    fixture.detectChanges();
 
-  it('should render title', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, DMIFinance');
+    expect((fixture.nativeElement as HTMLElement).querySelector('h1')?.textContent).toContain('Loan Dashboard');
+    httpTesting.verify();
   });
 });

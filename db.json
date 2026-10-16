@@ -1,0 +1,169 @@
+{
+  "applications": [
+    {
+      "id": "LA-2026-0108",
+      "applicantName": "Aarav Mehta",
+      "loanType": "Business",
+      "amount": 1850000,
+      "status": "Under Review",
+      "appliedDate": "2026-10-12",
+      "creditScore": 758,
+      "assignedTo": "Rahul Menon",
+      "remarks": "Bank statements received; reviewing cash flow."
+    },
+    {
+      "id": "LA-2026-0107",
+      "applicantName": "Priya Sharma",
+      "loanType": "Personal",
+      "amount": 450000,
+      "status": "Pending",
+      "appliedDate": "2026-10-10",
+      "creditScore": 724,
+      "assignedTo": "Ananya Rao",
+      "remarks": "Salary slips pending."
+    },
+    {
+      "id": "LA-2026-0106",
+      "applicantName": "Vikram Iyer",
+      "loanType": "Home",
+      "amount": 6200000,
+      "status": "Approved",
+      "appliedDate": "2026-10-08",
+      "creditScore": 811,
+      "assignedTo": "Neha Kapoor",
+      "remarks": "Property valuation and legal checks completed."
+    },
+    {
+      "id": "LA-2026-0105",
+      "applicantName": "Sneha Reddy",
+      "loanType": "Business",
+      "amount": 2750000,
+      "status": "Pending",
+      "appliedDate": "2026-10-05",
+      "creditScore": 689,
+      "assignedTo": "Rahul Menon",
+      "remarks": "Awaiting GST returns for the last two quarters."
+    },
+    {
+      "id": "LA-2026-0104",
+      "applicantName": "Arjun Nair",
+      "loanType": "Personal",
+      "amount": 800000,
+      "status": "Rejected",
+      "appliedDate": "2026-10-02",
+      "creditScore": 612,
+      "assignedTo": "Devika Shah",
+      "remarks": "Debt-to-income ratio exceeded policy threshold."
+    },
+    {
+      "id": "LA-2026-0103",
+      "applicantName": "Kavya Patel",
+      "loanType": "Home",
+      "amount": 4800000,
+      "status": "Under Review",
+      "appliedDate": "2026-09-28",
+      "creditScore": 746,
+      "assignedTo": "Neha Kapoor",
+      "remarks": "Final property document verification in progress."
+    },
+    {
+      "id": "LA-2026-0102",
+      "applicantName": "Rohan Das",
+      "loanType": "Personal",
+      "amount": 325000,
+      "status": "Approved",
+      "appliedDate": "2026-09-24",
+      "creditScore": 779,
+      "assignedTo": "Ananya Rao",
+      "remarks": "Income and identity verification complete."
+    },
+    {
+      "id": "LA-2026-0101",
+      "applicantName": "Meera Joshi",
+      "loanType": "Business",
+      "amount": 3900000,
+      "status": "Rejected",
+      "appliedDate": "2026-09-19",
+      "creditScore": 641,
+      "assignedTo": "Rahul Menon",
+      "remarks": "Insufficient operating history for requested amount."
+    },
+    {
+      "id": "LA-2026-0100",
+      "applicantName": "Ishaan Gupta",
+      "loanType": "Home",
+      "amount": 7350000,
+      "status": "Pending",
+      "appliedDate": "2026-09-15",
+      "creditScore": 802,
+      "assignedTo": "Devika Shah",
+      "remarks": "Awaiting co-applicant income documents."
+    },
+    {
+      "id": "LA-2026-0099",
+      "applicantName": "Ananya Bose",
+      "loanType": "Personal",
+      "amount": 625000,
+      "status": "Under Review",
+      "appliedDate": "2026-09-11",
+      "creditScore": 708,
+      "assignedTo": "Ananya Rao",
+      "remarks": "Employment details confirmed; final review pending."
+    },
+    {
+      "id": "LA-2026-0098",
+      "applicantName": "Kabir Singh",
+      "loanType": "Business",
+      "amount": 1250000,
+      "status": "Approved",
+      "appliedDate": "2026-09-06",
+      "creditScore": 768,
+      "assignedTo": "Rahul Menon",
+      "remarks": "Working capital facility approved."
+    },
+    {
+      "id": "LA-2026-0097",
+      "applicantName": "Diya Krishnan",
+      "loanType": "Home",
+      "amount": 5600000,
+      "status": "Rejected",
+      "appliedDate": "2026-08-30",
+      "creditScore": 628,
+      "assignedTo": "Neha Kapoor",
+      "remarks": "Property title discrepancy requires resolution."
+    },
+    {
+      "id": "LA-2026-0096",
+      "applicantName": "Aditya Kulkarni",
+      "loanType": "Personal",
+      "amount": 975000,
+      "status": "Pending",
+      "appliedDate": "2026-08-24",
+      "creditScore": 735,
+      "assignedTo": "Devika Shah",
+      "remarks": "Application received; documents not yet reviewed."
+    },
+    {
+      "id": "LA-2026-0095",
+      "applicantName": "Nisha Verma",
+      "loanType": "Business",
+      "amount": 2200000,
+      "status": "Approved",
+      "appliedDate": "2026-08-18",
+      "creditScore": 792,
+      "assignedTo": "Rahul Menon",
+      "remarks": "Business expansion loan approved subject to standard terms."
+    },
+    {
+      "id": "LA-2026-0094",
+      "applicantName": "Farhan Ali",
+      "loanType": "Personal",
+      "amount": 275000,
+      "status": "Rejected",
+      "appliedDate": "2026-08-12",
+      "creditScore": 598,
+      "assignedTo": "Ananya Rao",
+      "remarks": "Recent missed payments found during credit review."
+    }
+  ]
+}

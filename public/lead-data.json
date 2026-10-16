@@ -1,0 +1,56 @@
+[
+  {
+    "id": "DMI1938WK2",
+    "name": "Finverge Labs",
+    "createdDate": "2025-07-06",
+    "status": "Pending"
+  },
+  {
+    "id": "DMI9283KWJ",
+    "name": "Zentora Tech",
+    "createdDate": "2025-07-05",
+    "status": "Active"
+  },
+  {
+    "id": "DMI922JK70",
+    "name": "CredoraX Solutions",
+    "createdDate": "2025-07-05",
+    "status": "Rejected"
+  },
+  {
+    "id": "DMI922JK70",
+    "name": "BharatNest Ventures",
+    "createdDate": "2025-07-05",
+    "status": "Disbursed"
+  },
+  {
+    "id": "DMI922JK70",
+    "name": "NirogGenix Health",
+    "createdDate": "2025-07-05",
+    "status": "Active"
+  },
+  {
+    "id": "DMI922JK70",
+    "name": "YantraGrid Systems",
+    "createdDate": "2025-07-05",
+    "status": "Pending"
+  },
+  {
+    "id": "DMI922JK70",
+    "name": "Aayati Digital",
+    "createdDate": "2025-07-05",
+    "status": "Active"
+  },
+  {
+    "id": "DMI922JK70",
+    "name": "Vridhi AI Pvt Ltd",
+    "createdDate": "2025-07-05",
+    "status": "Pending"
+  },
+  {
+    "id": "DMI922JK70",
+    "name": "Tatsam Mobility",
+    "createdDate": "2025-07-05",
+    "status": "Disbursed"
+  }
+]
