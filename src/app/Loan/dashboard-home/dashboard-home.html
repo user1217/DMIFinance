@@ -1,0 +1,235 @@
+<div class="dashboard-shell">
+  <header class="topbar">
+      <a class="lead-brand" routerLink="/" aria-label="DMI Finance dashboard">
+      <span class="lead-brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 52 40" fill="none">
+          <path d="M8 27 15 9l5 11 5-15 6 17 5-9 8 14H8Z" fill="currentColor" />
+          <path d="M5 32h42M10 36h32" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </span>
+      <span>DMI FINANCE</span>
+    </a>>
+    <div class="topbar-meta">
+      <span class="live-indicator" aria-hidden="true"></span>
+      <span>Loan operations</span>
+      <span class="topbar-divider" aria-hidden="true"></span>
+      <span class="avatar" aria-label="Signed in as Ananya Rao">AR</span>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <section class="page-heading" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">OVERVIEW <span aria-hidden="true">/</span> APPLICATIONS</p>
+        <h1 id="page-title">Loan applications</h1>
+        <p class="page-subtitle">Review and manage your lending pipeline.</p>
+      </div>
+      <div class="heading-date"><span aria-hidden="true">◷</span> All applications</div>
+    </section>
+
+    @if (loadState() === 'loading') {
+      <section class="summary-grid" aria-label="Application summary">
+        <div class="summary-card skeleton-card" aria-hidden="true"></div>
+        <div class="summary-card skeleton-card" aria-hidden="true"></div>
+        <div class="summary-card skeleton-card" aria-hidden="true"></div>
+      </section>
+    } @else if (loadState() === 'loaded') {
+      <section class="summary-grid" aria-label="Application summary">
+        <article class="summary-card">
+          <div class="summary-label">TOTAL APPLICATIONS <span class="summary-icon blue" aria-hidden="true">▤</span></div>
+          <div class="summary-value">{{ totalApplications() }}</div>
+          <p class="summary-note">Across all application statuses</p>
+        </article>
+        <article class="summary-card">
+          <div class="summary-label">TOTAL PIPELINE <span class="summary-icon amber" aria-hidden="true">↗</span></div>
+          <div class="summary-value">{{ pipelineAmount() | currency:'INR':'symbol':'1.0-0' }}</div>
+          <p class="summary-note">Pending and under-review amounts</p>
+        </article>
+        <article class="summary-card">
+          <div class="summary-label">APPROVAL RATE <span class="summary-icon green" aria-hidden="true">✓</span></div>
+          <div class="summary-value">{{ approvalRate() }}<span class="value-suffix">%</span></div>
+          <p class="summary-note">Approved ÷ all applications</p>
+        </article>
+      </section>
+    }
+
+    <section class="applications-section" aria-labelledby="applications-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="applications-title">Applications</h2>
+          @if (loadState() === 'loaded') {
+            <p>{{ filteredApplications().length }} records <span aria-hidden="true">·</span> most recently updated</p>
+          }
+        </div>
+        @if (loadState() === 'loaded') {
+          <div class="filters" aria-label="Application filters and sorting">
+            <label class="select-wrap">
+              <span class="sr-only">Filter by status</span>
+              <select aria-label="Filter by status" [value]="statusFilter()" (change)="setStatusFilter($event)">
+                <option value="All">All statuses</option>
+                @for (status of statuses; track status) {
+                  <option [value]="status">{{ status }}</option>
+                }
+              </select>
+            </label>
+            <label class="select-wrap">
+              <span class="sr-only">Filter by loan type</span>
+              <select aria-label="Filter by loan type" [value]="loanTypeFilter()" (change)="setLoanTypeFilter($event)">
+                <option value="All">All loan types</option>
+                @for (loanType of loanTypes; track loanType) {
+                  <option [value]="loanType">{{ loanType }}</option>
+                }
+              </select>
+            </label>
+            <label class="select-wrap sort-select">
+              <span class="sr-only">Sort applications</span>
+              <select aria-label="Sort applications" [value]="sortOrder()" (change)="setSortOrder($event)">
+                <option value="date-desc">Newest first</option>
+                <option value="date-asc">Oldest first</option>
+                <option value="amount-desc">Amount: high to low</option>
+                <option value="amount-asc">Amount: low to high</option>
+              </select>
+            </label>
+          </div>
+        }
+      </div>
+
+      @if (loadState() === 'loading') {
+        <div class="state-panel" role="status" aria-live="polite">
+          <span class="loader" aria-hidden="true"></span>
+          <h3>Loading applications</h3>
+          <p>Connecting to your loan application records…</p>
+        </div>
+      } @else if (loadState() === 'error') {
+        <div class="state-panel error-panel" role="alert">
+          <span class="state-symbol error-symbol" aria-hidden="true">!</span>
+          <h3>We couldn’t load applications</h3>
+          <p>{{ errorMessage() }}</p>
+          <button class="button button-primary" type="button" (click)="retry()">Try again</button>
+        </div>
+      } @else if (filteredApplications().length === 0) {
+        <div class="state-panel" role="status">
+          <span class="state-symbol empty-symbol" aria-hidden="true">⌕</span>
+          <h3>No applications match these filters</h3>
+          <p>Try changing the status or loan type filters to see more records.</p>
+          <button class="button button-secondary" type="button" (click)="clearFilters()">Clear filters</button>
+        </div>
+      } @else {
+        <div class="application-list">
+          @for (application of filteredApplications(); track application.id) {
+            <button
+              class="application-card"
+              [class.selected-card]="selectedApplication()?.id === application.id"
+              type="button"
+              [attr.aria-label]="'View ' + application.applicantName + ', ' + (application.amount | currency:'INR':'symbol':'1.0-0') + ', ' + application.loanType + ' loan, ' + application.status"
+              (click)="selectApplication(application)"
+            >
+              <span class="applicant-avatar" aria-hidden="true">{{ initials(application.applicantName) }}</span>
+              <span class="application-person">
+                <strong>{{ application.applicantName }}</strong>
+                <span>{{ application.id }}</span>
+              </span>
+              <span class="application-amount">
+                <strong>{{ application.amount | currency:'INR':'symbol':'1.0-0' }}</strong>
+                <span>{{ application.loanType }} loan</span>
+              </span>
+              <span class="application-status">
+                <span class="status-badge" [class]="'status-badge status-' + statusClass(application.status)">
+                  <span class="status-dot" aria-hidden="true"></span>{{ application.status }}
+                </span>
+              </span>
+              <span class="application-date">
+                <strong>{{ application.appliedDate | date:'dd MMM yyyy' }}</strong>
+                <span>Applied on</span>
+              </span>
+              <span class="card-chevron" aria-hidden="true">›</span>
+            </button>
+          }
+        </div>
+      }
+    </section>
+  </main>
+
+  @if (selectedApplication(); as application) {
+    <div class="panel-backdrop" (click)="closeDetails()" (keydown.escape)="closeDetails()">
+      <aside
+        class="detail-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="detail-title"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeDetails()"
+      >
+        <div class="detail-header">
+          <div>
+            <p class="eyebrow">APPLICATION DETAILS</p>
+            <h2 id="detail-title">{{ application.applicantName }}</h2>
+            <p class="detail-id">{{ application.id }}</p>
+          </div>
+          <button class="icon-button" type="button" aria-label="Close application details" (click)="closeDetails()">×</button>
+        </div>
+
+        <div class="detail-scroll">
+          <section class="credit-card" aria-label="Credit score">
+            <div class="credit-copy">
+              <span>Credit score</span>
+              <strong>{{ application.creditScore }}<small> / 850</small></strong>
+              <span class="credit-rating" [class]="creditRatingClass(application.creditScore)">{{ creditRating(application.creditScore) }}</span>
+            </div>
+            <div
+              class="credit-gauge"
+              role="img"
+              [attr.aria-label]="'Credit score ' + application.creditScore + ' out of 850'"
+              [style.--score-percent]="(application.creditScore / 850 * 100) + '%'"
+            >
+              <span>{{ application.creditScore }}</span>
+            </div>
+          </section>
+
+          <section class="detail-section" aria-labelledby="loan-overview-title">
+            <h3 id="loan-overview-title">Loan overview</h3>
+            <dl class="detail-grid">
+              <div><dt>Loan amount</dt><dd>{{ application.amount | currency:'INR':'symbol':'1.0-0' }}</dd></div>
+              <div><dt>Loan type</dt><dd>{{ application.loanType }}</dd></div>
+              <div><dt>Applied date</dt><dd>{{ application.appliedDate | date:'dd MMMM yyyy' }}</dd></div>
+              <div>
+                <dt>Current status</dt>
+                <dd><span class="status-badge" [class]="'status-badge status-' + statusClass(application.status)"><span class="status-dot" aria-hidden="true"></span>{{ application.status }}</span></dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="detail-section" aria-labelledby="applicant-info-title">
+            <h3 id="applicant-info-title">Application notes</h3>
+            <dl class="detail-grid notes-grid">
+              <div><dt>Assigned to</dt><dd>{{ application.assignedTo }}</dd></div>
+              <div class="remarks-field"><dt>Remarks</dt><dd>{{ application.remarks || 'No remarks provided.' }}</dd></div>
+            </dl>
+          </section>
+
+          <section class="detail-section status-update" aria-labelledby="status-update-title">
+            <h3 id="status-update-title">Update status <span class="ui-only-tag">UI only</span></h3>
+            <label class="field-label" for="next-status">New application status</label>
+            <select id="next-status" [value]="draftStatus()" (change)="setDraftStatus($event)">
+              @for (status of statuses; track status) {
+                <option [value]="status">{{ status }}</option>
+              }
+            </select>
+            <button class="button button-primary apply-button" type="button" [disabled]="draftStatus() === application.status" (click)="requestStatusConfirmation()">
+              Review status change
+            </button>
+            @if (confirmationPending()) {
+              <div class="confirm-box" role="alertdialog" aria-label="Confirm status change">
+                <p>Change status from <strong>{{ application.status }}</strong> to <strong>{{ draftStatus() }}</strong>?</p>
+                <div class="confirm-actions">
+                  <button class="button button-secondary" type="button" (click)="cancelStatusChange()">Cancel</button>
+                  <button class="button button-primary" type="button" (click)="confirmStatusChange()">Confirm change</button>
+                </div>
+              </div>
+            }
+          </section>
+        </div>
+      </aside>
+    </div>
+  }
+</div>

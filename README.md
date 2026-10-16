@@ -1,16 +1,34 @@
-# Loan Dashboard
+# DMI Finance Loan Dashboard
 
-The Angular app opens the screenshot-inspired DMI Finance lead dashboard at [http://localhost:4200](http://localhost:4200).
+The Angular app includes a loan application dashboard at [http://localhost:4200/](http://localhost:4200/).
 
-## Start
+## Start the frontend and mock API
+
+In separate terminals, run:
+
+```bash
+npm run mock:api
+```
+
+This starts JSON Server on port 3000 and serves the 15 sample applications in `db.json` at `http://localhost:3000/applications`.
 
 ```bash
 npm start
 ```
 
-Lead records are loaded from `public/lead-data.json` through `src/app/service/lead.service.ts`; Angular serves that file as `/lead-data.json`. The original loan application data and service files are kept separately and unchanged.
+The Angular dashboard uses the same endpoint through `LoanApplicationService`.
 
-The lead list includes the screenshot fields (Lead Name, Lead ID, Lead Creation Date, Status), screenshot-matched workflow cards, search, status filtering, date sorting, CSV export, pagination, and explicit loading, empty, error, and retry states. Workflow card counts are static sample dashboard metrics from the reference; the table rows are loaded independently from the nine records in `public/lead-data.json`.
+## Dashboard behavior
+
+- Status and loan-type filters and amount/date sorting run in the browser against the loaded applications.
+- Summary values always use the full loaded dataset, regardless of active filters:
+  - **Total applications:** number of loaded application records.
+  - **Pipeline amount:** sum of amounts with `Pending` or `Under Review` status.
+  - **Approval rate:** approved records divided by all loaded records, expressed as a percentage; zero when there are no records.
+- Selecting an application opens a side panel with all record fields and a visual credit score gauge.
+- Status changes require confirmation and update only the in-memory UI; they are not sent to JSON Server.
+
+The existing lead dashboard remains available separately at `/loan-dashboard-2`.
 
 ## Validate
 

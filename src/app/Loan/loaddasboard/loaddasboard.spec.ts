@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { Lead, LEADS_DATA_URL } from '../../service/lead.service';
 import { LoanDashboard } from './loaddasboard';
 
@@ -22,7 +23,7 @@ describe('LoanDashboard', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [LoanDashboard],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
     httpTesting = TestBed.inject(HttpTestingController);
   });
@@ -44,6 +45,7 @@ describe('LoanDashboard', () => {
 
   it('loads the leads and displays the screenshot table headings and records', () => {
     const { element } = createLoadedDashboard();
+    expect(element.querySelector('.lead-brand')?.getAttribute('href')).toBe('/');
     const headings = Array.from(element.querySelectorAll('thead th')).map((cell) =>
       cell.textContent?.trim(),
     );

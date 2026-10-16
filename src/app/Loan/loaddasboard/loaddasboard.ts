@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Lead, LeadStatus, LeadService } from '../../service/lead.service';
 
 type LoadState = 'loading' | 'loaded' | 'error';
@@ -20,7 +21,7 @@ interface DashboardGroup {
 
 @Component({
   selector: 'app-loan-dashboard',
-  imports: [DatePipe],
+  imports: [DatePipe, RouterLink],
   templateUrl: './loaddasboard.html',
 })
 export class LoanDashboard {
