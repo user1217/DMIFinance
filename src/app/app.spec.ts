@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { App } from './app';
 import { routes } from './app.routes';
-import { LOAN_APPLICATIONS_API_URL } from './loan-application.service';
+import { LOAN_APPLICATIONS_API_URL } from './service/loan-application.service';
 import { LEADS_DATA_URL } from './service/lead.service';
 
 describe('App', () => {
@@ -31,7 +31,7 @@ describe('App', () => {
     const element = fixture.nativeElement as HTMLElement;
     expect(element.querySelector('h1')?.textContent).toContain('Choose a dashboard');
     expect(Array.from(element.querySelectorAll('.dashboard-link-copy strong')).map((label) => label.textContent?.trim()))
-      .toEqual(['1 - Loan Dashboard', '2 - Loan Dashboard 2', '3 - Verify KYB']);
+      .toEqual(['1 - Loan Dashboard', '2 - Figma Loan Dashboard', '3 - Verify KYC']);
     expect(element.querySelector('.dashboard-launcher')).not.toBeNull();
     httpTesting.expectNone(LOAN_APPLICATIONS_API_URL);
   });
@@ -45,13 +45,13 @@ describe('App', () => {
     fixture.detectChanges();
     const element = fixture.nativeElement as HTMLElement;
 
-    element.querySelector<HTMLAnchorElement>('[routerLink="/loan-dashboard-2"]')!.click();
+    element.querySelector<HTMLAnchorElement>('[routerLink="/figma-loan-dashboard"]')!.click();
     await fixture.whenStable();
     fixture.detectChanges();
     httpTesting.expectOne(LEADS_DATA_URL).flush([]);
     fixture.detectChanges();
 
-    expect(router.url).toBe('/loan-dashboard-2');
+    expect(router.url).toBe('/figma-loan-dashboard');
     expect(element.querySelector('.dashboard-launcher')).toBeNull();
     expect(element.querySelector('h1')?.textContent).toContain('Loan Dashboard');
   });
@@ -65,10 +65,10 @@ describe('App', () => {
     fixture.detectChanges();
     const element = fixture.nativeElement as HTMLElement;
 
-    element.querySelector<HTMLAnchorElement>('[routerLink="/loan-dashboard"]')!.click();
+    element.querySelector<HTMLAnchorElement>('[routerLink="/loan-application-dashboard"]')!.click();
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(router.url).toBe('/loan-dashboard');
+    expect(router.url).toBe('/loan-application-dashboard');
     expect(element.querySelector('.dashboard-launcher')).toBeNull();
 
     await router.navigateByUrl('/');
@@ -76,10 +76,10 @@ describe('App', () => {
     fixture.detectChanges();
     expect(element.querySelector('.dashboard-launcher')).not.toBeNull();
 
-    element.querySelector<HTMLAnchorElement>('[routerLink="/verify-kyb"]')!.click();
+    element.querySelector<HTMLAnchorElement>('[routerLink="/verify-kyc"]')!.click();
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(router.url).toBe('/verify-kyb');
+    expect(router.url).toBe('/verify-kyc');
     expect(element.querySelector('.dashboard-launcher')).toBeNull();
   });
 

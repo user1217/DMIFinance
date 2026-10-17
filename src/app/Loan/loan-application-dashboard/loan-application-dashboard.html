@@ -1,3 +1,4 @@
+<!-- Signal calls below read reactive view state; event bindings delegate user actions to this component. -->
 <div class="dashboard-shell">
   <header class="topbar">
       <a class="lead-brand" routerLink="/" aria-label="DMI Finance dashboard">
@@ -60,6 +61,7 @@
           <div class="filters" aria-label="Application filters and sorting">
             <label class="select-wrap">
               <span class="sr-only">Filter by status</span>
+              <!-- Applies the chosen status to the visible application list. -->
               <select aria-label="Filter by status" [value]="statusFilter()" (change)="setStatusFilter($event)">
                 <option value="All">All statuses</option>
                 @for (status of statuses; track status) {
@@ -69,6 +71,7 @@
             </label>
             <label class="select-wrap">
               <span class="sr-only">Filter by loan type</span>
+              <!-- Applies the chosen loan type to the visible application list. -->
               <select aria-label="Filter by loan type" [value]="loanTypeFilter()" (change)="setLoanTypeFilter($event)">
                 <option value="All">All loan types</option>
                 @for (loanType of loanTypes; track loanType) {
@@ -78,6 +81,7 @@
             </label>
             <label class="select-wrap sort-select">
               <span class="sr-only">Sort applications</span>
+              <!-- Applies one of the available date or amount orderings. -->
               <select aria-label="Sort applications" [value]="sortOrder()" (change)="setSortOrder($event)">
                 <option value="date-desc">Newest first</option>
                 <option value="date-asc">Oldest first</option>
@@ -100,6 +104,7 @@
           <span class="state-symbol error-symbol" aria-hidden="true">!</span>
           <h3>We couldn’t load applications</h3>
           <p>{{ errorMessage() }}</p>
+          <!-- Retries the application request after a load error. -->
           <button class="button button-primary" type="button" (click)="retry()">Try again</button>
         </div>
       } @else if (filteredApplications().length === 0) {
@@ -107,11 +112,13 @@
           <span class="state-symbol empty-symbol" aria-hidden="true">⌕</span>
           <h3>No applications match these filters</h3>
           <p>Try changing the status or loan type filters to see more records.</p>
+          <!-- Restores both filter controls when no applications match. -->
           <button class="button button-secondary" type="button" (click)="clearFilters()">Clear filters</button>
         </div>
       } @else {
         <div class="application-list">
           @for (application of filteredApplications(); track application.id) {
+            <!-- Opens this record's detail panel. -->
             <button
               class="application-card"
               [class.selected-card]="selectedApplication()?.id === application.id"
@@ -119,6 +126,7 @@
               [attr.aria-label]="'View ' + application.applicantName + ', ' + (application.amount | currency:'INR':'symbol':'1.0-0') + ', ' + application.loanType + ' loan, ' + application.status"
               (click)="selectApplication(application)"
             >
+              <!-- Derives a compact avatar label from the applicant name. -->
               <span class="applicant-avatar" aria-hidden="true">{{ initials(application.applicantName) }}</span>
               <span class="application-person">
                 <strong>{{ application.applicantName }}</strong>
@@ -129,6 +137,7 @@
                 <span>{{ application.loanType }} loan</span>
               </span>
               <span class="application-status">
+                <!-- Normalizes the status for its corresponding badge color. -->
                 <span class="status-badge" [class]="'status-badge status-' + statusClass(application.status)">
                   <span class="status-dot" aria-hidden="true"></span>{{ application.status }}
                 </span>
@@ -146,7 +155,9 @@
   </main>
 
   @if (selectedApplication(); as application) {
+    <!-- Closes the panel when the backdrop or Escape key is used. -->
     <div class="panel-backdrop" (click)="closeDetails()" (keydown.escape)="closeDetails()">
+      <!-- Keeps clicks inside the dialog from bubbling to the dismissible backdrop. -->
       <aside
         class="detail-panel"
         role="dialog"
@@ -161,6 +172,7 @@
             <h2 id="detail-title">{{ application.applicantName }}</h2>
             <p class="detail-id">{{ application.id }}</p>
           </div>
+          <!-- Closes the application detail panel explicitly. -->
           <button class="icon-button" type="button" aria-label="Close application details" (click)="closeDetails()">×</button>
         </div>
 
@@ -169,6 +181,7 @@
             <div class="credit-copy">
               <span>Credit score</span>
               <strong>{{ application.creditScore }}<small> / 850</small></strong>
+              <!-- Maps the score to a visual class and a readable rating label. -->
               <span class="credit-rating" [class]="creditRatingClass(application.creditScore)">{{ creditRating(application.creditScore) }}</span>
             </div>
             <div
@@ -205,11 +218,13 @@
           <section class="detail-section status-update" aria-labelledby="status-update-title">
             <h3 id="status-update-title">Update status <span class="ui-only-tag">UI only</span></h3>
             <label class="field-label" for="next-status">New application status</label>
+            <!-- Updates the proposed status without changing the saved record yet. -->
             <select id="next-status" [value]="draftStatus()" (change)="setDraftStatus($event)">
               @for (status of statuses; track status) {
                 <option [value]="status">{{ status }}</option>
               }
             </select>
+            <!-- Opens confirmation only when the proposed status differs from the current one. -->
             <button class="button button-primary apply-button" type="button" [disabled]="draftStatus() === application.status" (click)="requestStatusConfirmation()">
               Review status change
             </button>
@@ -217,7 +232,9 @@
               <div class="confirm-box" role="alertdialog" aria-label="Confirm status change">
                 <p>Change status from <strong>{{ application.status }}</strong> to <strong>{{ draftStatus() }}</strong>?</p>
                 <div class="confirm-actions">
+                  <!-- Discards the proposal and restores the saved status. -->
                   <button class="button button-secondary" type="button" (click)="cancelStatusChange()">Cancel</button>
+                  <!-- Applies the proposed status to the in-memory dashboard data. -->
                   <button class="button button-primary" type="button" (click)="confirmStatusChange()">Confirm change</button>
                 </div>
               </div>

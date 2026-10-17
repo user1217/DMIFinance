@@ -1,3 +1,4 @@
+<!-- Signal calls below read reactive view state; event bindings delegate user actions to this component. -->
 <div class="lead-dashboard">
   <header class="lead-topbar">
     <a class="lead-brand" routerLink="/" aria-label="DMI Finance dashboard">
@@ -12,6 +13,7 @@
 
     <label class="lead-search">
       <span class="sr-only">Search leads by name or ID</span>
+      <!-- Sends each keystroke to the handler that updates the search signal and resets paging. -->
       <input
         type="search"
         placeholder="Search here"
@@ -86,6 +88,7 @@
 
         @if (loadState() === 'loaded') {
           <div class="lead-table-actions">
+            <!-- Toggles the filter drawer without leaving the dashboard. -->
             <button
               class="lead-filter-button"
               type="button"
@@ -96,9 +99,11 @@
               Apply Filter
               <svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M6 10h8m-5 5h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
             </button>
+            <!-- Flips the sort direction; the label reflects the next ordering context. -->
             <button class="lead-tool-button" type="button" [attr.aria-label]="'Sort by creation date, ' + (sortOrder() === 'newest' ? 'newest first' : 'oldest first')" (click)="toggleDateSort()">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5.5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.7" /><path d="M7.5 3.5v4m9-4v4M4 9.5h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" /></svg>
             </button>
+            <!-- Starts a CSV download for the currently filtered results. -->
             <button class="lead-tool-button" type="button" aria-label="Download leads as CSV" (click)="downloadCsv()">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 3.5v11m0 0 4-4m-4 4-4-4M5 17v3h14v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
             </button>
@@ -110,6 +115,7 @@
         <div class="lead-filter-drawer" id="lead-filters">
           <label>
             <span>Status</span>
+            <!-- Applies the selected status to the derived lead list. -->
             <select aria-label="Filter leads by status" [value]="statusFilter()" (change)="setStatusFilter($event)">
               <option value="All">All statuses</option>
               @for (status of statuses; track status) {
@@ -117,6 +123,7 @@
               }
             </select>
           </label>
+          <!-- Restores default search, status, sort, and page settings. -->
           <button class="lead-reset-button" type="button" (click)="clearFilters()">Reset</button>
         </div>
       }
@@ -132,6 +139,7 @@
           <span class="lead-state-icon" aria-hidden="true">!</span>
           <strong>We couldn’t load leads</strong>
           <span>{{ errorMessage() }}</span>
+          <!-- Retries loading leads after the error state. -->
           <button class="lead-action-button" type="button" (click)="retry()">Try again</button>
         </div>
       } @else if (filteredLeads().length === 0) {
@@ -139,6 +147,7 @@
           <span class="lead-state-icon lead-empty-icon" aria-hidden="true">⌕</span>
           <strong>No leads match your search or filters</strong>
           <span>Change your search or filters to see more records.</span>
+          <!-- Clears current filters when they produce no visible rows. -->
           <button class="lead-action-button lead-secondary-button" type="button" (click)="clearFilters()">Clear filters</button>
         </div>
       } @else {
@@ -158,6 +167,7 @@
                   <td>{{ lead.name }}</td>
                   <td>{{ lead.id }}</td>
                   <td>{{ lead.createdDate | date:'MMM dd, yyyy' }}</td>
+                  <!-- Converts the status to the CSS suffix used to color its badge. -->
                   <td><span [class]="'lead-row-status lead-row-status-' + statusClass(lead.status)">{{ lead.status }}</span></td>
                 </tr>
               }
@@ -168,10 +178,13 @@
         <div class="lead-table-footer">
           <span>Showing data {{ rangeStart() }} to {{ rangeEnd() }} of {{ filteredLeads().length }} entries</span>
           <nav class="lead-pagination" aria-label="Lead pages">
+            <!-- Requests the previous page; the disabled binding prevents moving before page one. -->
             <button type="button" aria-label="Previous page" [disabled]="currentPage() === 1" (click)="changePage(currentPage() - 1)">‹</button>
             @for (page of pageNumbers(); track page) {
+              <!-- Selects the numbered page and marks the active page accessibly. -->
               <button type="button" [class.current-page]="currentPage() === page" [attr.aria-current]="currentPage() === page ? 'page' : null" [attr.aria-label]="'Page ' + page" (click)="changePage(page)">{{ page }}</button>
             }
+            <!-- Requests the next page; the disabled binding prevents moving past the last page. -->
             <button type="button" aria-label="Next page" [disabled]="currentPage() === pageCount()" (click)="changePage(currentPage() + 1)">›</button>
           </nav>
         </div>

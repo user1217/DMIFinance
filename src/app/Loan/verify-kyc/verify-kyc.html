@@ -1,0 +1,283 @@
+<!-- Signal calls below read reactive form state; input and click bindings update it through component methods. -->
+<main class="kyb-app">
+  <header class="kyb-header">
+    <a class="kyb-home-link" routerLink="/" aria-label="Back to dashboards">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+        <path d="m15 18-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </a>
+    <h1>Verify Your KYB</h1>
+    <span class="header-spacer" aria-hidden="true"></span>
+  </header>
+
+  @if (submitted()) {
+    <section class="completion-state" aria-labelledby="complete-title">
+      <span class="completion-icon" aria-hidden="true">✓</span>
+      <h2 id="complete-title">Agreement submitted</h2>
+      <p>Your business verification documents have been submitted for review.</p>
+      <!-- Resets the completion view to the start of the application flow. -->
+      <button class="button button-primary" type="button" (click)="startAgain()">Start a new application</button>
+    </section>
+  } @else {
+    <nav class="stepper" aria-label="KYB verification progress">
+      @for (step of steps; track step.label; let index = $index) {
+        <!-- Returns to a completed step; future steps remain disabled. -->
+        <button
+          class="step"
+          [class.step-complete]="index < currentStep()"
+          [class.step-current]="index === currentStep()"
+          [class.step-upcoming]="index > currentStep()"
+          [attr.aria-current]="index === currentStep() ? 'step' : null"
+          [attr.aria-label]="'Step ' + (index + 1) + ': ' + step.label + (index < currentStep() ? ', completed' : index === currentStep() ? ', current step' : ', upcoming')"
+          [disabled]="index > currentStep()"
+          type="button"
+          (click)="goToStep(index)"
+        >
+          <span class="step-indicator" aria-hidden="true">
+            @if (index < currentStep()) {
+              <svg viewBox="0 0 20 20" fill="none"><path d="m5 10 3.2 3.2L15 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            } @else if (index === currentStep()) {
+              <span class="step-current-dot"></span>
+            } @else {
+              <span class="step-upcoming-dot"></span>
+            }
+          </span>
+          <span class="step-label">{{ step.shortLabel }}</span>
+        </button>
+      }
+    </nav>
+
+    <section class="step-content" aria-live="polite">
+      @switch (currentStep()) {
+        @case (0) {
+          <div class="step-copy">
+            <h2>Tell us about your business</h2>
+            <p>Enter the details registered with your business documents.</p>
+          </div>
+          <label class="field">
+            <span>Business name</span>
+            <!-- Writes the updated organization name to its signal. -->
+            <input
+              autocomplete="organization"
+              [value]="companyName()"
+              (input)="setCompanyName($event)"
+              placeholder="Registered business name"
+            />
+          </label>
+          <label class="field">
+            <span>Business PAN</span>
+            <!-- Writes the updated business PAN to its signal. -->
+            <input
+              autocomplete="off"
+              [value]="businessPan()"
+              (input)="setBusinessPan($event)"
+              placeholder="Enter business PAN"
+            />
+          </label>
+        }
+        @case (1) {
+          <div class="step-copy">
+            <h2>Choose your loan offer</h2>
+            <p>Tell us the amount and repayment period you’re looking for.</p>
+          </div>
+          <label class="field">
+            <span>Loan amount (₹)</span>
+            <!-- Writes the requested amount to its signal. -->
+            <input
+              inputmode="numeric"
+              min="1"
+              type="number"
+              [value]="loanAmount()"
+              (input)="setLoanAmount($event)"
+              placeholder="Enter loan amount"
+            />
+          </label>
+          <label class="field">
+            <span>Repayment tenure (months)</span>
+            <!-- Writes the repayment period to its signal. -->
+            <input
+              inputmode="numeric"
+              min="1"
+              type="number"
+              [value]="loanTenure()"
+              (input)="setLoanTenure($event)"
+              placeholder="For example, 24"
+            />
+          </label>
+        }
+        @case (2) {
+          <div class="step-copy">
+            <h2>Please upload your business registration document</h2>
+          </div>
+          <label class="field">
+            <span>Document Type</span>
+            <!-- Stores the selected category so uploads can be associated with it. -->
+            <select [value]="documentType()" (change)="setDocumentType($event)">
+              <option value="" disabled>Select Document Type</option>
+              <option>GST Registration</option>
+              <option>Udyam Registration Certificate (URC)</option>
+              <option>Shop &amp; Establishment Certificate</option>
+              <option>Business/ Trade License</option>
+              <option>FSSAI</option>
+              <option>Import Export Certificate</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Document number</span>
+            <!-- Writes the document identifier to the form state. -->
+            <input
+              autocomplete="off"
+              [value]="documentNumber()"
+              (input)="setDocumentNumber($event)"
+              placeholder="Enter the document number"
+            />
+          </label>
+          <div class="upload-area" [class.upload-area-uploaded]="uploadedDocuments().length > 0" aria-live="polite">
+            @if (uploadedDocuments().length > 0) {
+              @for (document of uploadedDocuments(); track document.documentType) {
+                <span class="upload-icon upload-icon-success" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M7 3.5h7l5 5V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                    <path d="M14 4v5h5M8.5 15l2 2 5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+                <strong class="selected-file-name">{{ document.documentType }}: {{ document.file.name }}</strong>
+                <!-- Formats the file size for the uploaded-document summary. -->
+                <span class="upload-hint">{{ formatFileSize(document.file.size) }}</span>
+              }
+            } @else {
+              <span class="upload-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M7 3.5h7l5 5V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                  <path d="M14 4v5h5M9 14h6M9 17h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                </svg>
+              </span>
+              <strong>Select file to upload</strong>
+              <span class="upload-hint">JPG, PNG or PDF, up to 2.5 MB</span>
+            }
+            <label
+              class="button button-outline file-picker"
+              [class.file-picker-uploaded]="uploadedDocuments().length > 0"
+              [class.file-picker-disabled]="!documentType()"
+              [style.borderColor]="uploadedDocuments().length > 0 ? '#72c783' : null"
+            >
+              {{ uploadedDocuments().length > 0 ? 'Change File' : 'Select' }}
+              <!-- Validates the chosen file and associates it with the selected document type. -->
+              <input
+                #fileInput
+                aria-label="Select a business registration document"
+                accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+                [disabled]="!documentType()"
+                type="file"
+                (change)="onFileSelected($event)"
+              />
+            </label>
+            @if (fileError()) {
+              <p class="field-error" role="alert">{{ fileError() }}</p>
+            }
+          </div>
+        }
+        @case (3) {
+          <div class="step-copy">
+            <h2>Confirm your business address</h2>
+            <p>Enter the registered address and authorize mandate setup.</p>
+          </div>
+          <label class="field">
+            <span>Registered address</span>
+            <!-- Stores the registered street address for step validation. -->
+            <input autocomplete="street-address" [value]="address()" (input)="setAddress($event)" placeholder="Building, street and area" />
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span>City</span>
+              <!-- Stores the city for address-step validation. -->
+              <input autocomplete="address-level2" [value]="city()" (input)="setCity($event)" placeholder="City" />
+            </label>
+            <label class="field">
+              <span>PIN code</span>
+              <!-- Stores the PIN code used by the six-digit validation rule. -->
+              <input autocomplete="postal-code" inputmode="numeric" maxlength="6" [value]="postalCode()" (input)="setPostalCode($event)" placeholder="6 digits" />
+            </label>
+          </div>
+          <label class="consent-field">
+            <!-- Updates mandate consent required before continuing. -->
+            <input type="checkbox" [checked]="mandateAccepted()" (change)="setMandateAccepted($event)" />
+            <span>I authorize the e-mandate setup for this application.</span>
+          </label>
+        }
+        @case (4) {
+          <div class="step-copy">
+            <h2>Review and sign your agreement</h2>
+            <p>Please review your business verification details before submitting.</p>
+          </div>
+          <div class="agreement-card">
+            <span class="agreement-icon" aria-hidden="true">✓</span>
+            <div>
+              <strong>KYB verification agreement</strong>
+              <p>Your submitted business details and documents will be reviewed securely.</p>
+            </div>
+          </div>
+          <label class="consent-field">
+            <!-- Updates final agreement consent required for submission. -->
+            <input type="checkbox" [checked]="agreementAccepted()" (change)="setAgreementAccepted($event)" />
+            <span>I have reviewed the details and agree to submit this application.</span>
+          </label>
+        }
+      }
+    </section>
+
+    <footer class="kyb-footer">
+      <div class="footer-actions">
+        <!-- Validates the active step before advancing, opening the document prompt, or submitting. -->
+        <button
+          class="button button-primary continue-button"
+          type="button"
+          [disabled]="!canContinue()"
+          (click)="continue()"
+        >
+          {{ currentStep() === steps.length - 1 ? 'Submit agreement' : 'Continue' }}
+        </button>
+      </div>
+      <p class="security-note">
+        <svg aria-hidden="true" viewBox="0 0 16 16" fill="none">
+          <path d="M8 1.5 13 3.5v4c0 3.1-2 5.8-5 7-3-1.2-5-3.9-5-7v-4l5-2Z" fill="currentColor" />
+          <path d="m5.5 7.8 1.6 1.6 3.4-3.5" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Your information is secure
+      </p>
+    </footer>
+  }
+
+    @if (showSecondDocumentPrompt()) {
+      <div class="sheet-backdrop">
+        <section
+          class="second-document-sheet"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="second-document-title"
+        >
+          <span class="second-document-icon" aria-hidden="true">
+            <svg viewBox="0 0 72 64" fill="none">
+              <path d="M25 8h24a4 4 0 0 1 4 4v5h6a4 4 0 0 1 4 4v31a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4V12a4 4 0 0 1 5-4Z" fill="#d8d3f4" />
+              <path d="M14 17h24a4 4 0 0 1 4 4v4h13a4 4 0 0 1 4 4v23a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V21a4 4 0 0 1 4-4Z" fill="#aaa4e5" />
+              <path d="M10 25h30a4 4 0 0 1 4 4v23a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V25Z" fill="#9c96dc" />
+              <path d="M46 6v8m-8-5v5m16-5v5" stroke="#e8c9d5" stroke-width="5" stroke-linecap="round" />
+            </svg>
+          </span>
+          <h2 id="second-document-title">Do you have second business<br class="mobile-break" /> document?</h2>
+          <!-- Closes the prompt and clears the prior document fields without opening a picker. -->
+          <button
+            class="button button-primary second-document-upload"
+            type="button"
+            (click)="closeSecondDocumentPrompt()"
+          >
+            Upload Second Document
+          </button>
+          <!-- Closes the optional-document prompt and proceeds to the next step. -->
+          <button class="button second-document-skip" type="button" (click)="skipSecondDocument()">
+            Skip &amp; Proceed
+          </button>
+        </section>
+      </div>
+    }
+</main>

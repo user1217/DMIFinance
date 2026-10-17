@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Lead, LEADS_DATA_URL } from '../../service/lead.service';
-import { LoanDashboard } from './loaddasboard';
+import { LoanDashboard } from './figma-loan-dashboard';
 
 const sampleLeads: Lead[] = [
   { id: 'DMI1938WK2', name: 'Finverge Labs', createdDate: '2025-07-06', status: 'Pending' },

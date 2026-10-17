@@ -28,7 +28,7 @@ The Angular dashboard uses the same endpoint through `LoanApplicationService`.
 - Selecting an application opens a side panel with all record fields and a visual credit score gauge.
 - Status changes require confirmation and update only the in-memory UI; they are not sent to JSON Server.
 
-The existing lead dashboard remains available separately at `/loan-dashboard-2`.
+The existing lead dashboard remains available separately at `/figma-loan-dashboard`.
 
 ## Validate
 

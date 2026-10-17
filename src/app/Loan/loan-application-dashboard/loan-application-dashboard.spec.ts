@@ -1,9 +1,10 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { LoanApplication } from '../../loan-application';
-import { LOAN_APPLICATIONS_API_URL } from '../../loan-application.service';
-import { DashboardHome } from './dashboard-home';
+import { LOAN_APPLICATIONS_API_URL } from '../../service/loan-application.service';
+import { LoanApplicationDashboard } from './loan-application-dashboard';
 
 const sampleApplications: LoanApplication[] = [
   {
@@ -52,13 +53,13 @@ const sampleApplications: LoanApplication[] = [
   },
 ];
 
-describe('DashboardHome', () => {
+describe('LoanApplicationDashboard', () => {
   let httpTesting: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DashboardHome],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      imports: [LoanApplicationDashboard],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
     httpTesting = TestBed.inject(HttpTestingController);
   });
@@ -67,8 +68,8 @@ describe('DashboardHome', () => {
 
   function createDashboard(
     applications: LoanApplication[] = sampleApplications,
-  ): { fixture: ComponentFixture<DashboardHome>; element: HTMLElement } {
-    const fixture = TestBed.createComponent(DashboardHome);
+  ): { fixture: ComponentFixture<LoanApplicationDashboard>; element: HTMLElement } {
+    const fixture = TestBed.createComponent(LoanApplicationDashboard);
     fixture.detectChanges();
     httpTesting.expectOne(LOAN_APPLICATIONS_API_URL).flush(applications);
     fixture.detectChanges();
@@ -187,7 +188,7 @@ describe('DashboardHome', () => {
   });
 
   it('shows loading then a meaningful error and retries the API request', () => {
-    const fixture = TestBed.createComponent(DashboardHome);
+    const fixture = TestBed.createComponent(LoanApplicationDashboard);
     fixture.detectChanges();
     const element = fixture.nativeElement as HTMLElement;
     expect(element.querySelector('[role="status"]')?.textContent).toContain('Loading applications');

@@ -1,5 +1,5 @@
-@import './app/Loan/loaddasboard/loaddasboard.css';
-@import './app/Loan/dashboard-home/dashboard-home.css';
+@import './app/Loan/figma-loan-dashboard/figma-loan-dashboard.css';
+@import './app/Loan/loan-application-dashboard/loan-application-dashboard.css';
 
 :root {
   color-scheme: light;
